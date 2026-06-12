@@ -1,9 +1,12 @@
-<!-- Demo video -->
-<p align="center">
-  <video src="wcx-hzdj-yov%20(2026-05-20%2023_02%20GMT%2B9).mp4" controls width="100%"></video>
-</p>
+# Low-Power IoT Communication
 
-# computer-network: Low-Power IoT Communication Design
+**How IoT Systems Stay Connected While Using as Little Energy as Possible**
+
+> Course: Computer Networks (DCCS 307)  
+> Team: Group 5  
+> Presentation Video: [Watch Here](https://drive.google.com/file/d/1lYzUxbq11MzKErFVEkW2tJlV6To6xhxG/view?usp=sharing)
+
+---
 
 > A research and design project that analyzes communication protocols and low-power system strategies for IoT environments with limited battery capacity, network resources, processing power, and memory.
 
