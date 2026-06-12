@@ -1,71 +1,75 @@
-﻿# computer-network: Low-Power IoT Communication Design
+<!-- Replace `assets/demo.mp4` with your demo video file or hosted video URL. -->
+<p align="center">
+  <video src="assets/demo.mp4" controls width="100%"></video>
+</p>
 
-> 제한된 배터리와 네트워크 자원을 가진 IoT 환경에서, 상황별로 가장 적합한 통신 프로토콜과 저전력 설계 전략을 분석하는 프로젝트입니다.
+# computer-network: Low-Power IoT Communication Design
 
-이 저장소는 스마트홈과 스마트워치처럼 전력, 처리 성능, 메모리, 네트워크 품질이 제한된 IoT 환경을 대상으로 통신 프로토콜과 저전력 시스템 구조를 비교 분석하는 **문서 기반 연구/설계 프로젝트**입니다.
+> A research and design project that analyzes communication protocols and low-power system strategies for IoT environments with limited battery capacity, network resources, processing power, and memory.
 
-현재 저장소에는 실행 코드나 패키지 설정 파일이 포함되어 있지 않습니다. 따라서 별도의 빌드, 설치, 실행 명령은 제공하지 않으며, README를 중심으로 연구 배경과 설계 방향을 정리합니다.
+This repository is a **document-based research and design project** focused on low-power IoT communication for constrained environments such as smart homes and smartwatches.
 
-## 목차
+At the current stage, this repository does not include executable source code or package configuration files. There are no separate build, installation, or runtime commands. The README serves as the main project document for the research background, design direction, protocol analysis, and future expansion plan.
 
-- [1. 프로젝트 개요](#1-프로젝트-개요)
-- [2. 연구 배경](#2-연구-배경)
-- [3. 핵심 질문](#3-핵심-질문)
-- [4. 전체 아키텍처 개념도](#4-전체-아키텍처-개념도)
-- [5. 저장소 구조](#5-저장소-구조)
-- [6. 프로토콜 비교](#6-프로토콜-비교)
-- [7. UDP 기반 저전력 통신 분석](#7-udp-기반-저전력-통신-분석)
-- [8. 저전력 하드웨어/소프트웨어 설계 전략](#8-저전력-하드웨어소프트웨어-설계-전략)
-- [9. 적용 시나리오](#9-적용-시나리오)
-- [10. 결론 및 향후 확장 방향](#10-결론-및-향후-확장-방향)
+## Table of Contents
 
-## 1. 프로젝트 개요
+- [1. Project Overview](#1-project-overview)
+- [2. Research Background](#2-research-background)
+- [3. Key Questions](#3-key-questions)
+- [4. Overall Architecture Concept](#4-overall-architecture-concept)
+- [5. Protocol Comparison](#5-protocol-comparison)
+- [6. UDP-Based Low-Power Communication Analysis](#6-udp-based-low-power-communication-analysis)
+- [7. Low-Power Hardware and Software Design Strategies](#7-low-power-hardware-and-software-design-strategies)
+- [8. Application Scenarios](#8-application-scenarios)
+- [9. Conclusion and Future Work](#9-conclusion-and-future-work)
 
-이 프로젝트는 스마트홈과 스마트워치처럼 배터리, 처리 능력, 네트워크 자원이 제한된 IoT 환경에서 어떤 통신 프로토콜과 저전력 구조가 적합한지 분석하는 연구/설계 프로젝트입니다.
+## 1. Project Overview
 
-핵심 목표는 다음과 같습니다.
+This project analyzes which communication protocols and low-power system structures are suitable for IoT environments where battery capacity, processing capability, memory, and network quality are limited.
 
-- TCP, UDP, MQTT, CoAP, BLE, Zigbee, Matter 등 주요 IoT 통신 프로토콜 비교
-- 저전력 IoT 환경에서 UDP 기반 통신의 장점과 한계 분석
-- 스마트홈과 스마트워치에 적합한 프로토콜 조합 제안
-- PIM, Clock Gating, Power Gating, Duty Cycling 같은 저전력 설계 기법 정리
-- 신뢰성, 지연 시간, 에너지 소비, 보안, 확장성을 기준으로 통신 구조 평가
+The main goals are:
 
-IoT 통신 설계에서 중요한 점은 하나의 프로토콜이 모든 문제를 해결하지 못한다는 것입니다. 온도 센서처럼 작은 데이터를 주기적으로 보내는 장치, 조명이나 플러그처럼 즉각적인 제어가 필요한 장치, 스마트워치처럼 작은 배터리로 하루 이상 동작해야 하는 장치는 서로 다른 통신 전략을 요구합니다.
+- Compare major IoT communication protocols such as TCP, UDP, MQTT, CoAP, BLE, Zigbee, and Matter.
+- Analyze the advantages and limitations of UDP-based communication in low-power IoT environments.
+- Propose suitable protocol combinations for smart homes and smartwatches.
+- Summarize low-power design techniques such as Processing-In-Memory, Clock Gating, Power Gating, and Duty Cycling.
+- Evaluate communication structures based on reliability, latency, energy consumption, security, and scalability.
 
-## 2. 연구 배경
+The key point in IoT communication design is that no single protocol solves every problem. A temperature sensor that periodically sends small values, a smart light that needs immediate control, and a smartwatch that must run for more than a day on a small battery all require different communication strategies.
 
-IoT 디바이스는 일반 PC나 서버와 다르게 다음과 같은 제약을 가집니다.
+## 2. Research Background
 
-| 제약 요소 | 설명 | 통신 설계에 미치는 영향 |
+Unlike general PCs or servers, IoT devices usually operate under the following constraints.
+
+| Constraint | Description | Impact on Communication Design |
 | --- | --- | --- |
-| 배터리 용량 제한 | 센서, 웨어러블, 리모컨형 장치는 잦은 충전이 어렵습니다. | 송수신 횟수, 패킷 크기, 무선 모듈 활성 시간을 줄여야 합니다. |
-| 낮은 처리 성능 | MCU 기반 장치는 CPU 성능이 낮고 병렬 처리 능력이 제한됩니다. | 복잡한 암호화, 대용량 버퍼링, 긴 연결 유지가 부담이 됩니다. |
-| 제한된 메모리 | RAM과 플래시 저장 공간이 작습니다. | 프로토콜 스택은 단순하고 가벼울수록 유리합니다. |
-| 불안정한 무선 네트워크 | 간섭, 거리, 장애물, 배터리 상태에 따라 링크 품질이 변합니다. | 재전송, 메시지 확인, 게이트웨이 중계 구조가 필요합니다. |
-| 짧은 데이터 반복 전송 | 센서 데이터는 보통 수 바이트에서 수십 바이트 단위입니다. | 헤더와 연결 관리 오버헤드가 전체 비용에서 크게 느껴집니다. |
-| 실시간성과 신뢰성의 공존 | 알림, 제어, 로그, 긴급 이벤트는 요구사항이 다릅니다. | 데이터 중요도에 따라 프로토콜을 다르게 선택해야 합니다. |
+| Limited battery capacity | Sensors, wearables, and remote-control devices are difficult to charge frequently. | Transmission frequency, packet size, and wireless module active time must be reduced. |
+| Low processing power | MCU-based devices have limited CPU performance and limited parallel processing capability. | Complex encryption, large buffering, and long-lived connections can become expensive. |
+| Limited memory | RAM and flash storage are usually small. | Lightweight and simple protocol stacks are preferred. |
+| Unstable wireless networks | Link quality changes depending on interference, distance, obstacles, and battery state. | Retransmission, message confirmation, and gateway relay structures may be needed. |
+| Repeated transmission of small data | Sensor data is usually only a few bytes to a few dozen bytes. | Header and connection-management overhead can become a large part of the total cost. |
+| Coexistence of real-time behavior and reliability | Notifications, control messages, logs, and emergency events have different requirements. | Protocols should be selected according to data importance and timing requirements. |
 
-TCP는 연결 수립 과정, ACK, 재전송, 흐름 제어, 혼잡 제어를 통해 높은 신뢰성을 제공합니다. 하지만 이 과정은 연결 유지 비용과 패킷 오버헤드를 동반합니다. 작은 센서 데이터가 대부분인 IoT 환경에서는 TCP의 안정성이 장점이면서 동시에 전력 소비와 지연 증가의 원인이 될 수 있습니다.
+TCP provides high reliability through connection establishment, acknowledgements, retransmission, flow control, and congestion control. However, these mechanisms also introduce connection maintenance cost and packet overhead. In IoT environments where most messages are small sensor readings, TCP's reliability can be useful, but it can also increase power consumption and latency.
 
-반면 UDP는 비연결형 프로토콜이며 헤더가 작고 지연 시간이 낮습니다. 연결을 맺고 유지하는 절차가 없기 때문에 짧은 메시지를 빠르게 보내야 하는 저전력 IoT 환경에 잘 맞습니다. 그러나 UDP 자체는 패킷 전달 보장, 순서 보장, 재전송, 세션 관리, 보안 기능을 제공하지 않습니다.
+UDP is a connectionless protocol with a small header and low latency. Because it does not require connection setup or connection maintenance, it works well for short messages in low-power IoT environments. However, UDP itself does not provide delivery guarantees, ordering, retransmission, session management, or built-in security.
 
-따라서 IoT 환경에서는 단일 프로토콜을 무조건 선택하는 것이 아니라, 데이터의 중요도, 실시간성, 전력 소비, 보안 요구사항에 따라 TCP, UDP, MQTT, CoAP, BLE, Zigbee 등을 조합하는 설계가 필요합니다.
+Therefore, IoT systems should not blindly choose a single protocol. A practical design combines TCP, UDP, MQTT, CoAP, BLE, Zigbee, and other technologies according to data importance, real-time requirements, power consumption, and security needs.
 
-## 3. 핵심 질문
+## 3. Key Questions
 
-| 질문 | 간단한 답변 |
+| Question | Short Answer |
 | --- | --- |
-| 스마트홈 환경에서는 MQTT, BLE, Zigbee, Matter 중 어떤 조합이 적합한가? | 배터리 센서와 근거리 장치는 BLE 또는 Zigbee가 적합하고, 게이트웨이와 클라우드 사이에는 MQTT over TCP가 적합합니다. Matter는 제조사 간 호환성을 높이는 상위 연결 표준으로 활용할 수 있습니다. |
-| 스마트워치처럼 배터리가 작은 웨어러블 기기에서는 왜 BLE가 중요한가? | BLE는 짧은 연결 이벤트와 낮은 대기 전력에 초점을 둔 무선 통신 방식입니다. 스마트워치는 지속적으로 Wi-Fi나 LTE를 켜두기 어렵기 때문에 스마트폰과 BLE로 연결하고, 스마트폰을 클라우드 중계 장치로 활용하는 구조가 효율적입니다. |
-| UDP는 왜 저전력 IoT 환경에 적합한가? | 연결 수립 과정이 없고 헤더가 작으며 지연이 낮기 때문입니다. 작은 센서 데이터를 자주 전송하는 경우 TCP보다 통신 절차가 단순해 에너지 소비를 줄일 수 있습니다. |
-| UDP의 신뢰성 부족 문제는 CoAP CON/NON, Graphene, Safety Buffer 같은 방식으로 어떻게 보완할 수 있는가? | CoAP CON은 확인 응답이 필요한 메시지에 사용하고, NON은 손실을 어느 정도 허용하는 메시지에 사용합니다. Graphene은 UDP 위에 필요한 만큼의 경량 신뢰성 계층을 추가하는 설계 아이디어로 볼 수 있으며, Safety Buffer는 일시적인 네트워크 손실에 대비해 데이터를 임시 저장한 뒤 재전송하는 방식으로 보완할 수 있습니다. |
-| 저전력 설계에서 통신 프로토콜뿐 아니라 하드웨어 구조가 왜 중요한가? | 무선 통신 모듈, CPU, 메모리, 센서가 깨어 있는 시간이 전력 소비를 크게 좌우하기 때문입니다. 프로토콜이 가볍더라도 하드웨어가 계속 활성 상태라면 배터리 수명을 늘리기 어렵습니다. |
-| PIM, Clock Gating, Power Gating, Duty Cycling은 각각 어떤 방식으로 전력 소비를 줄이는가? | PIM은 데이터 이동을 줄이고, Clock Gating은 사용하지 않는 회로의 클럭을 차단하며, Power Gating은 미사용 블록의 전원을 끕니다. Duty Cycling은 장치를 대부분 절전 상태로 두고 필요한 순간에만 깨워 송수신합니다. |
+| Which combination of MQTT, BLE, Zigbee, and Matter is suitable for a smart home environment? | BLE or Zigbee is suitable for battery-powered sensors and short-range devices, while MQTT over TCP is suitable between the gateway and the cloud. Matter can be used as an upper-level interoperability standard across manufacturers. |
+| Why is BLE important for wearable devices such as smartwatches? | BLE is designed around short connection events and low standby power. Since a smartwatch cannot keep Wi-Fi or LTE active all the time, connecting to a smartphone through BLE and using the phone as a cloud relay is more efficient. |
+| Why is UDP suitable for low-power IoT environments? | UDP has no connection setup process, uses a small header, and offers low latency. For frequent transmission of small sensor data, its communication process is simpler than TCP and can reduce energy consumption. |
+| How can UDP's reliability limitations be improved with approaches such as CoAP CON/NON, Graphene, and Safety Buffer? | CoAP CON can be used for messages that require acknowledgement, while NON can be used for messages that tolerate some loss. Graphene can be viewed as a lightweight reliability layer over UDP, and a Safety Buffer can temporarily store important data during network loss and retransmit it later. |
+| Why is hardware structure important in low-power design, beyond the communication protocol itself? | Power consumption is strongly affected by how long the wireless module, CPU, memory, and sensors stay active. Even if the protocol is lightweight, battery life will not improve much if the hardware remains awake unnecessarily. |
+| How do PIM, Clock Gating, Power Gating, and Duty Cycling reduce power consumption? | PIM reduces data movement, Clock Gating disables clocks for unused circuits, Power Gating cuts power to unused blocks, and Duty Cycling keeps the device asleep most of the time and wakes it only when needed. |
 
-## 4. 전체 아키텍처 개념도
+## 4. Overall Architecture Concept
 
-아래 다이어그램은 스마트홈과 스마트워치 환경에서 서로 다른 통신 방식을 조합하는 개념 구조를 보여줍니다.
+The following diagram shows a conceptual architecture that combines different communication methods in smart home and smartwatch environments.
 
 ```mermaid
 flowchart LR
@@ -88,105 +92,84 @@ flowchart LR
     Phone -->|MQTT / HTTPS| Cloud
 ```
 
-이 구조의 핵심은 **저전력 구간과 고신뢰 구간을 분리**하는 것입니다.
+The core idea is to **separate low-power sections from high-reliability sections**.
 
-- 센서와 웨어러블 장치: BLE, Zigbee, CoAP처럼 가벼운 통신 사용
-- 홈 게이트웨이와 스마트폰: 로컬 장치의 데이터를 모으고 프로토콜을 변환
-- 클라우드 구간: MQTT over TCP, HTTPS처럼 신뢰성과 보안성이 높은 통신 사용
+- Sensors and wearable devices use lightweight communication such as BLE, Zigbee, or CoAP.
+- Home gateways and smartphones collect data from local devices and translate protocols.
+- Cloud sections use reliable and secure communication such as MQTT over TCP or HTTPS.
 
-## 5. 저장소 구조
+## 5. Protocol Comparison
 
-현재 저장소 구조는 다음과 같습니다.
+### 6.1 Summary of Major Protocols
 
-```text
-.
-└── README.md
-```
-
-확인 결과, 현재 시점에는 다음 파일과 디렉터리가 존재하지 않습니다.
-
-- `package.json`
-- `requirements.txt`
-- `pyproject.toml`
-- `src/`
-- `docs/`
-- `assets/`
-- `notebooks/`
-
-따라서 이 저장소는 실행 가능한 애플리케이션이나 실험 코드 저장소가 아니라, 네트워크 프로토콜과 저전력 IoT 구조를 정리하는 **연구 문서 중심 저장소**로 해석합니다.
-
-## 6. 프로토콜 비교
-
-### 6.1 주요 프로토콜 요약
-
-| 프로토콜 | 계층/용도 | 장점 | 한계 | 적합한 IoT 사용처 |
+| Protocol | Layer / Purpose | Strengths | Limitations | Suitable IoT Use Cases |
 | --- | --- | --- | --- | --- |
-| TCP | 전송 계층 | 신뢰성, 순서 보장, 재전송, 흐름 제어 | 연결 수립과 유지 비용, 상대적으로 큰 오버헤드 | 클라우드 연동, 로그 업로드, 중요한 제어 메시지 |
-| UDP | 전송 계층 | 낮은 지연, 작은 헤더, 비연결형 구조 | 전달 보장 없음, 순서 보장 없음, 자체 보안 없음 | 센서 데이터, 실시간 상태 전송, 손실 허용 데이터 |
-| MQTT | 애플리케이션 계층 | Publish/Subscribe 구조, 브로커 기반 확장성, QoS 지원 | 보통 TCP 기반이라 연결 유지 비용 존재 | 스마트홈 게이트웨이, 클라우드 메시징 |
-| CoAP | 애플리케이션 계층 | UDP 기반, RESTful 구조, 작은 오버헤드, CON/NON 메시지 | HTTP/MQTT 생태계보다 적용 범위가 좁을 수 있음 | 제한된 센서 노드, 로컬 IoT 네트워크 |
-| BLE | 무선 통신 | 매우 낮은 전력 소비, 스마트폰 연동 용이 | 대역폭과 거리 제한 | 스마트워치, 웨어러블, 근거리 센서 |
-| Zigbee | 무선 메시 네트워크 | 저전력, 메시 네트워크, 다수 센서 연결 | 별도 코디네이터 필요, IP 네트워크와 직접 연결 어려움 | 조명, 스위치, 온습도 센서, 홈 자동화 |
-| Matter | 스마트홈 상호운용 표준 | 제조사 간 호환성, IP 기반 연결 지향 | 지원 기기와 생태계 의존 | 스마트홈 통합 제어, 플랫폼 간 연동 |
+| TCP | Transport layer | Reliability, ordering, retransmission, flow control | Connection setup and maintenance cost, relatively large overhead | Cloud integration, log upload, important control messages |
+| UDP | Transport layer | Low latency, small header, connectionless structure | No delivery guarantee, no ordering guarantee, no built-in security | Sensor data, real-time status transmission, loss-tolerant data |
+| MQTT | Application layer | Publish/subscribe model, broker-based scalability, QoS support | Usually runs over TCP, so connection maintenance cost exists | Smart home gateways, cloud messaging |
+| CoAP | Application layer | UDP-based, RESTful structure, small overhead, CON/NON message types | May have a narrower ecosystem than HTTP or MQTT | Constrained sensor nodes, local IoT networks |
+| BLE | Wireless communication | Very low power consumption, easy smartphone integration | Limited bandwidth and range | Smartwatches, wearables, short-range sensors |
+| Zigbee | Wireless mesh network | Low power, mesh networking, support for many sensor nodes | Requires a coordinator, difficult to connect directly to IP networks | Lights, switches, temperature and humidity sensors, home automation |
+| Matter | Smart home interoperability standard | Cross-vendor compatibility, IP-based connection model | Depends on supported devices and ecosystem maturity | Smart home integration, cross-platform control |
 
-### 6.2 평가 기준별 비교
+### 6.2 Comparison by Evaluation Criteria
 
-| 기준 | TCP | UDP | MQTT | CoAP | BLE | Zigbee | Matter |
+| Criterion | TCP | UDP | MQTT | CoAP | BLE | Zigbee | Matter |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 신뢰성 | 높음 | 낮음 | 높음 | 선택 가능 | 연결 방식에 따라 다름 | 중간 이상 | 높음 |
-| 지연 시간 | 중간 | 낮음 | 중간 | 낮음 | 낮음 | 낮음 | 중간 |
-| 에너지 효율 | 낮음~중간 | 높음 | 중간 | 높음 | 매우 높음 | 높음 | 중간 |
-| 보안 적용 | TLS | DTLS/애플리케이션 보안 필요 | TLS | DTLS/OSCORE 등 | 페어링/암호화 | 네트워크 키 기반 | 표준 보안 모델 |
-| 확장성 | 서버 구조에 의존 | 애플리케이션 설계에 의존 | 브로커 기반으로 높음 | 경량 REST 구조 | 개인/근거리 중심 | 메시 구성에 유리 | 생태계 통합에 유리 |
+| Reliability | High | Low | High | Configurable | Depends on connection mode | Medium to high | High |
+| Latency | Medium | Low | Medium | Low | Low | Low | Medium |
+| Energy efficiency | Low to medium | High | Medium | High | Very high | High | Medium |
+| Security | TLS | Requires DTLS or application-level security | TLS | DTLS, OSCORE, or similar | Pairing and encryption | Network-key based | Standardized security model |
+| Scalability | Depends on server structure | Depends on application design | High through broker-based architecture | Lightweight REST structure | Personal and short-range focused | Strong for mesh networks | Strong for ecosystem integration |
 
-## 7. UDP 기반 저전력 통신 분석
+## 6. UDP-Based Low-Power Communication Analysis
 
-### 7.1 UDP가 유리한 이유
+### 7.1 Why UDP Can Be Advantageous
 
-UDP는 연결을 만들지 않고 데이터를 바로 전송합니다. 이 특성은 다음과 같은 IoT 상황에서 유리합니다.
+UDP sends data without establishing a connection first. This characteristic is useful in the following IoT situations:
 
-- 온도, 습도, 조도처럼 작은 데이터를 주기적으로 보내는 경우
-- 몇 개의 패킷 손실이 전체 서비스 품질을 크게 해치지 않는 경우
-- 센서가 대부분 절전 상태에 있다가 짧게 깨어나 데이터를 보내야 하는 경우
-- 실시간성이 중요해 재전송보다 최신 상태 전달이 더 중요한 경우
+- Small data such as temperature, humidity, or light-level readings is transmitted periodically.
+- A few lost packets do not seriously harm the overall service quality.
+- A sensor stays asleep most of the time and wakes briefly to send data.
+- Real-time behavior is more important than retransmitting old data.
 
-예를 들어 온도 센서가 10초마다 값을 전송한다면, 한 번의 측정값이 손실되더라도 다음 측정값으로 상태를 회복할 수 있습니다. 이런 경우에는 TCP의 강한 신뢰성보다 UDP의 낮은 지연과 작은 오버헤드가 더 적합할 수 있습니다.
+For example, if a temperature sensor sends a value every 10 seconds, the system can recover from one lost reading when the next reading arrives. In this case, UDP's low latency and small overhead may be more suitable than TCP's strong reliability.
 
-### 7.2 UDP의 한계
+### 7.2 Limitations of UDP
 
-| 한계 | 설명 | 보완 방향 |
+| Limitation | Description | Possible Improvement |
 | --- | --- | --- |
-| 전달 보장 없음 | 패킷이 손실되어도 UDP 자체는 알 수 없습니다. | 애플리케이션 계층 ACK, CoAP CON 사용 |
-| 순서 보장 없음 | 늦게 보낸 패킷이 먼저 도착할 수 있습니다. | 시퀀스 번호, 타임스탬프 추가 |
-| 재전송 기능 없음 | 손실된 데이터를 자동으로 다시 보내지 않습니다. | 제한적 재전송 정책, Safety Buffer |
-| 보안 기능 없음 | UDP 자체에는 암호화와 인증이 없습니다. | DTLS, OSCORE, 애플리케이션 레벨 인증 |
-| 혼잡 제어 없음 | 많은 장치가 동시에 보내면 충돌과 손실이 증가합니다. | 전송 주기 분산, 백오프, 게이트웨이 큐잉 |
+| No delivery guarantee | UDP itself cannot detect whether a packet was lost. | Application-layer ACK, CoAP CON |
+| No ordering guarantee | A later packet may arrive before an earlier one. | Sequence numbers, timestamps |
+| No retransmission | Lost data is not automatically sent again. | Limited retransmission policy, Safety Buffer |
+| No built-in security | UDP itself does not provide encryption or authentication. | DTLS, OSCORE, application-level authentication |
+| No congestion control | If many devices transmit at the same time, collisions and loss can increase. | Distributed transmission timing, backoff, gateway queueing |
 
-### 7.3 신뢰성 보완 방식
+### 7.3 Reliability Improvement Methods
 
-UDP를 저전력 IoT에 적용할 때는 모든 메시지에 무거운 신뢰성을 부여하기보다, 메시지 중요도에 따라 선택적으로 보완하는 방식이 적합합니다.
+When applying UDP to low-power IoT, it is better to add reliability selectively based on message importance rather than applying heavy reliability to every message.
 
-| 방식 | 개념 | 적용 예시 |
+| Method | Concept | Example Use Cases |
 | --- | --- | --- |
-| CoAP CON | Confirmable 메시지로 전송하고 ACK를 기다립니다. | 도어락 상태 변경, 가스 누출 경고, 펌웨어 설정 변경 |
-| CoAP NON | Non-confirmable 메시지로 전송해 확인 응답 없이 처리합니다. | 주기적 온도/습도 측정, 조도 변화, 단순 상태 브로드캐스트 |
-| Graphene | UDP 위에 얇은 신뢰성 계층을 추가해 필요한 메시지만 추적, 확인, 재전송하는 설계 아이디어입니다. 본 README에서는 표준 프로토콜이라기보다 경량 미들웨어 또는 연구 설계 개념으로 다룹니다. | 센서 이벤트에 시퀀스 번호를 부여하고 게이트웨이에서 누락 여부를 판단 |
-| Safety Buffer | 네트워크가 불안정할 때 데이터를 임시 저장하고, 연결 품질이 회복되면 중요 데이터만 다시 전송합니다. | 스마트워치 운동 기록, 의료성 알림, 전력 사용량 로그 |
+| CoAP CON | Sends a confirmable message and waits for an acknowledgement. | Door-lock state changes, gas leak alerts, firmware setting changes |
+| CoAP NON | Sends a non-confirmable message without waiting for acknowledgement. | Periodic temperature and humidity readings, light-level changes, simple status broadcasts |
+| Graphene | A design idea that adds a thin reliability layer over UDP and tracks, acknowledges, or retransmits only the messages that need it. In this README, it is treated as a lightweight middleware or research design concept rather than a standard protocol. | Assigning sequence numbers to sensor events and letting the gateway detect missing data |
+| Safety Buffer | Temporarily stores data during unstable network conditions and retransmits only important data when link quality recovers. | Smartwatch exercise records, health-related alerts, power usage logs |
 
-핵심은 **UDP를 그대로 쓰는 것**이 아니라, UDP의 가벼운 구조 위에 필요한 만큼의 신뢰성만 추가하는 것입니다. 이렇게 하면 TCP보다 낮은 오버헤드를 유지하면서도 중요한 데이터 손실 위험을 줄일 수 있습니다.
+The key idea is not to use UDP as-is for every case, but to add only the necessary amount of reliability on top of UDP's lightweight structure. This preserves lower overhead than TCP while reducing the risk of losing important data.
 
-## 8. 저전력 하드웨어/소프트웨어 설계 전략
+## 7. Low-Power Hardware and Software Design Strategies
 
-통신 프로토콜이 가볍더라도 하드웨어와 소프트웨어가 계속 활성 상태라면 배터리 수명은 크게 늘어나지 않습니다. 저전력 IoT 설계에서는 통신 계층뿐 아니라 연산 구조, 메모리 접근, 클럭, 전원 도메인, 센서 동작 주기를 함께 고려해야 합니다.
+Even if the communication protocol is lightweight, battery life will not improve much if the hardware and software remain active all the time. Low-power IoT design must consider not only the communication layer, but also computation structure, memory access, clocks, power domains, and sensor operation cycles.
 
-| 기법 | 핵심 아이디어 | 전력 절감 원리 | IoT 적용 예시 |
+| Technique | Core Idea | Power-Saving Principle | IoT Example |
 | --- | --- | --- | --- |
-| PIM | Processing-In-Memory | CPU와 메모리 사이 데이터 이동을 줄여 에너지 소비를 낮춥니다. | 센서 데이터의 간단한 필터링, 패턴 감지, 임계값 판단 |
-| Clock Gating | 사용하지 않는 회로 블록의 클럭 차단 | 스위칭 활동을 줄여 동적 전력 소비를 줄입니다. | 통신 대기 중 센서 처리 블록 클럭 차단 |
-| Power Gating | 사용하지 않는 블록의 전원 차단 | 누설 전류를 줄여 대기 전력을 낮춥니다. | 야간 대기 모드에서 고성능 연산 블록 전원 차단 |
-| Duty Cycling | 대부분의 시간은 절전, 필요한 순간만 활성화 | 무선 모듈과 MCU의 활성 시간을 최소화합니다. | 1분마다 깨어나 센서 측정 후 다시 수면 상태 진입 |
+| PIM | Processing-In-Memory | Reduces energy consumption by reducing data movement between CPU and memory. | Simple filtering, pattern detection, threshold checks on sensor data |
+| Clock Gating | Disables clocks for unused circuit blocks | Reduces dynamic power consumption by lowering switching activity. | Disabling the sensor-processing block clock while waiting for communication |
+| Power Gating | Cuts power to unused blocks | Reduces standby power by lowering leakage current. | Turning off high-performance compute blocks during nighttime standby mode |
+| Duty Cycling | Keeps the device asleep most of the time and activates it only when needed | Minimizes active time for the wireless module and MCU. | Waking once per minute to sample a sensor, transmit data, and return to sleep |
 
-### 8.1 Duty Cycling 중심 동작 흐름
+### 8.1 Duty-Cycling Operation Flow
 
 ```mermaid
 stateDiagram-v2
@@ -200,13 +183,13 @@ stateDiagram-v2
     Transmit --> Sleep: Transmission Success
 ```
 
-Duty Cycling을 적용하면 장치는 대부분의 시간을 `Sleep` 상태로 보냅니다. 이후 타이머나 이벤트 인터럽트가 발생하면 짧게 깨어나 센서 값을 측정하고, 필요한 경우에만 통신 모듈을 활성화합니다. 이 방식은 스마트홈 센서와 스마트워치 모두에서 배터리 수명을 늘리는 가장 기본적인 전략입니다.
+With duty cycling, a device spends most of its time in the `Sleep` state. When a timer or event interrupt occurs, it wakes briefly, samples sensor values, and activates the communication module only when necessary. This is one of the most fundamental strategies for extending battery life in both smart home sensors and smartwatches.
 
-## 9. 적용 시나리오
+## 8. Application Scenarios
 
-### 9.1 스마트홈 통신 구조
+### 9.1 Smart Home Communication Structure
 
-스마트홈은 다양한 제조사의 장치, 여러 종류의 센서, 클라우드 기반 제어 서비스가 함께 동작하는 환경입니다. 모든 장치가 직접 클라우드에 연결되면 전력 소비와 관리 복잡도가 커지므로, 홈 게이트웨이를 중심으로 로컬 네트워크와 클라우드 네트워크를 분리하는 구조가 적합합니다.
+A smart home contains devices from different manufacturers, several types of sensors, and cloud-based control services. If every device connects directly to the cloud, power consumption and management complexity increase. A more suitable structure separates the local network from the cloud network around a home gateway.
 
 ```mermaid
 flowchart TD
@@ -225,20 +208,20 @@ flowchart TD
     Gateway --> SmartLight
 ```
 
-권장 조합은 다음과 같습니다.
+Recommended combinations are:
 
-| 구간 | 권장 프로토콜 | 이유 |
+| Section | Recommended Protocol | Reason |
 | --- | --- | --- |
-| 배터리 센서 -> 게이트웨이 | BLE 또는 Zigbee | 저전력, 짧은 메시지, 근거리 통신에 적합 |
-| 조명/플러그 -> 게이트웨이 | Zigbee 또는 Matter | 홈 자동화와 상호운용성에 유리 |
-| 게이트웨이 내부 메시징 | MQTT | Publish/Subscribe 구조로 여러 장치 상태 관리가 쉬움 |
-| 게이트웨이 -> 클라우드 | MQTT over TCP 또는 HTTPS | 신뢰성, 인증, 원격 제어에 적합 |
+| Battery sensor -> Gateway | BLE or Zigbee | Suitable for low power, short messages, and short-range communication |
+| Light or plug -> Gateway | Zigbee or Matter | Useful for home automation and interoperability |
+| Internal gateway messaging | MQTT | Publish/subscribe structure makes it easy to manage many device states |
+| Gateway -> Cloud | MQTT over TCP or HTTPS | Suitable for reliability, authentication, and remote control |
 
-스마트홈에서는 실시간성, 신뢰성, 호환성을 균형 있게 고려해야 합니다. 예를 들어 조명 제어는 지연이 짧아야 하지만, 에너지 사용량 로그는 약간 늦게 전송되어도 됩니다. 따라서 제어 메시지와 로그 메시지를 같은 방식으로 처리하기보다 우선순위와 QoS를 나누는 설계가 필요합니다.
+Smart homes must balance real-time behavior, reliability, and compatibility. For example, light control should have low latency, while energy usage logs can tolerate some delay. Therefore, control messages and log messages should not always be handled in the same way. Priority and QoS should be separated by message type.
 
-### 9.2 스마트워치 통신 구조
+### 9.2 Smartwatch Communication Structure
 
-스마트워치는 작은 배터리, 제한된 화면, 제한된 처리 성능을 가진 대표적인 웨어러블 IoT 장치입니다. Wi-Fi나 LTE를 항상 켜두면 배터리 소모가 크기 때문에, 일반적으로 스마트폰을 중계 장치로 사용하는 구조가 효율적입니다.
+A smartwatch is a representative wearable IoT device with a small battery, limited screen, and limited processing capability. Keeping Wi-Fi or LTE active all the time would consume too much power, so using a smartphone as a relay is generally more efficient.
 
 ```mermaid
 sequenceDiagram
@@ -246,38 +229,38 @@ sequenceDiagram
     participant P as Smartphone
     participant C as Cloud
 
-    W->>W: 센서 측정 및 로컬 필터링
-    W->>P: BLE GATT로 요약 데이터 전송
-    P->>C: HTTPS 또는 MQTT로 클라우드 동기화
-    C-->>P: 알림 / 분석 결과
-    P-->>W: BLE로 필요한 결과만 전달
+    W->>W: Sensor sampling and local filtering
+    W->>P: Send summarized data over BLE GATT
+    P->>C: Synchronize with cloud over HTTPS or MQTT
+    C-->>P: Notification / analysis result
+    P-->>W: Send only necessary results over BLE
 ```
 
-권장 조합은 다음과 같습니다.
+Recommended combinations are:
 
-| 구간 | 권장 프로토콜 | 이유 |
+| Section | Recommended Protocol or Method | Reason |
 | --- | --- | --- |
-| 스마트워치 내부 | PIM, 로컬 필터링, Duty Cycling | 원시 데이터를 모두 전송하지 않고 필요한 정보만 추출 |
-| 스마트워치 -> 스마트폰 | BLE GATT | 저전력, 근거리, 스마트폰 연동성 우수 |
-| 스마트폰 -> 클라우드 | HTTPS 또는 MQTT | 스마트폰의 전력과 네트워크 자원을 활용 |
-| 연결 실패 시 | Safety Buffer | 운동 기록, 건강 데이터 등 중요 데이터를 임시 저장 |
+| Inside the smartwatch | PIM, local filtering, Duty Cycling | Extract only necessary information instead of transmitting all raw data |
+| Smartwatch -> Smartphone | BLE GATT | Low power, short range, and strong smartphone compatibility |
+| Smartphone -> Cloud | HTTPS or MQTT | Uses the smartphone's power and network resources |
+| During connection failure | Safety Buffer | Temporarily stores important data such as exercise records or health-related data |
 
-스마트워치에서는 통신 횟수를 줄이는 것이 중요합니다. 심박수나 가속도 데이터를 매 순간 그대로 전송하기보다, 워치 내부에서 평균값, 이벤트, 이상 징후를 먼저 계산한 뒤 필요한 데이터만 전송하는 방식이 더 적합합니다.
+For smartwatches, reducing the number of transmissions is important. Instead of sending heart-rate or accelerometer data continuously as raw values, the watch should first calculate averages, events, or abnormal patterns locally and transmit only the necessary data.
 
-## 10. 결론 및 향후 확장 방향
+## 9. Conclusion and Future Work
 
-저전력 IoT 통신 설계의 핵심은 **프로토콜 선택, 하드웨어 저전력 구조, 데이터 중요도 분류를 함께 고려하는 것**입니다. UDP, BLE, Zigbee처럼 가벼운 통신 방식은 배터리 기반 장치에 유리하지만, 신뢰성이나 보안이 필요한 데이터에는 CoAP CON, MQTT QoS, DTLS/OSCORE, Safety Buffer 같은 보완 구조가 필요합니다.
+The core of low-power IoT communication design is to consider **protocol selection, low-power hardware structure, and data-importance classification together**. Lightweight communication methods such as UDP, BLE, and Zigbee are useful for battery-powered devices, but data that requires reliability or security needs additional structures such as CoAP CON, MQTT QoS, DTLS, OSCORE, or Safety Buffer.
 
-스마트홈에서는 BLE/Zigbee/Matter 기반 로컬 네트워크와 MQTT 기반 게이트웨이-클라우드 구조를 조합하는 방식이 적합합니다. 스마트워치에서는 BLE를 중심으로 스마트폰을 중계 장치로 활용하고, 로컬 처리와 Duty Cycling을 통해 통신 횟수와 활성 시간을 줄이는 방식이 적합합니다.
+For smart homes, a combination of BLE/Zigbee/Matter-based local networking and an MQTT-based gateway-to-cloud structure is suitable. For smartwatches, BLE should be used around a smartphone relay, while local processing and duty cycling should reduce transmission frequency and active time.
 
-향후 확장 방향은 다음과 같습니다.
+Future work can include:
 
-- 실제 센서 데이터 예제를 추가해 프로토콜별 패킷 크기와 지연 시간 비교
-- MQTT QoS 0/1/2와 CoAP CON/NON의 에너지 소비 비교 실험
-- BLE 연결 간격, 광고 주기, MTU 크기에 따른 배터리 영향 분석
-- Zigbee 메시 네트워크와 Matter 기반 스마트홈 구조 비교
-- Safety Buffer 크기와 재전송 정책에 따른 데이터 손실률 분석
-- 간단한 시뮬레이터 또는 Python 노트북을 추가해 실험 결과 시각화
-- 보안 계층 적용 전후의 메모리 사용량, 지연 시간, 전력 소비 비교
+- Add real sensor data examples and compare packet size and latency by protocol.
+- Compare energy consumption across MQTT QoS 0/1/2 and CoAP CON/NON.
+- Analyze battery impact based on BLE connection interval, advertising interval, and MTU size.
+- Compare Zigbee mesh networking with Matter-based smart home architecture.
+- Analyze data loss rates under different Safety Buffer sizes and retransmission policies.
+- Add a simple simulator or Python notebook to visualize experimental results.
+- Compare memory usage, latency, and power consumption before and after applying security layers.
 
-이 프로젝트는 현재 README 중심의 연구 정리 단계이며, 이후 실험 코드와 데이터셋이 추가되면 문서 기반 분석에서 재현 가능한 실험 프로젝트로 확장할 수 있습니다.
+This project is currently in a README-centered research summary stage. Once experiment code and datasets are added, it can grow from a document-based analysis into a reproducible experiment project.
