@@ -1,6 +1,6 @@
-<!-- Replace `assets/demo.mp4` with your demo video file or hosted video URL. -->
+<!-- Demo video -->
 <p align="center">
-  <video src="assets/demo.mp4" controls width="100%"></video>
+  <video src="wcx-hzdj-yov%20(2026-05-20%2023_02%20GMT%2B9).mp4" controls width="100%"></video>
 </p>
 
 # computer-network: Low-Power IoT Communication Design
